@@ -12,7 +12,7 @@ struct aliendown_renderopt {
 };
 
 static struct module_state {
-	struct mkd_renderer rndr;
+	struct sd_callbacks callbacks;
 	struct aliendown_renderopt options;
 } _state;
 
@@ -65,10 +65,9 @@ aliendown_md(PyObject *self, PyObject *args, PyObject *kwargs)
 
 	/* Output buffer */
 	ob = bufnew(128);
-	bufgrow(ob, ib.size * 1.4f);
 
 	/* do the magic */
-	sd_markdown(ob, &ib, &_state.rndr, aliendown_md_flags);
+	sd_markdown(ob, &ib, aliendown_md_flags, &_state.callbacks, &_state.options);
 
 	/* make a Python string */
 	py_result = Py_BuildValue("s#", ob->data, (int)ob->size);
@@ -91,7 +90,7 @@ PyMODINIT_FUNC initaliendown(void)
 	if (module == NULL)
 		return;
 
-	sdhtml_renderer(&_state.rndr,
+	sdhtml_renderer(&_state.callbacks,
 			(struct html_renderopt *)&_state.options,
 			aliendown_render_flags);
 
