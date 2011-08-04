@@ -12,7 +12,7 @@ struct aliendown_renderopt {
 };
 
 static struct module_state {
-    struct mkd_renderer rndr;
+	struct mkd_renderer rndr;
 	struct aliendown_renderopt options;
 } _state;
 
@@ -50,37 +50,37 @@ aliendown_link_attr(struct buf *ob, struct buf *link, void *opaque)
 static PyObject *
 aliendown_md(PyObject *self, PyObject *args, PyObject *kwargs)
 {
-    static char *kwlist[] = {"text", "nofollow", "target", NULL};
+	static char *kwlist[] = {"text", "nofollow", "target", NULL};
 
-    struct buf ib, *ob;
-    PyObject *py_result;
+	struct buf ib, *ob;
+	PyObject *py_result;
 
 	memset(&ib, 0x0, sizeof(struct buf));
 
-    /* Parse arguments */
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#|iz", kwlist,
-        &ib.data, &ib.size, &_state.options.nofollow, &_state.options.target)) {
-        return NULL;
-    }
+	/* Parse arguments */
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#|iz", kwlist,
+				&ib.data, &ib.size, &_state.options.nofollow, &_state.options.target)) {
+		return NULL;
+	}
 
-    /* Output buffer */
-    ob = bufnew(128);
+	/* Output buffer */
+	ob = bufnew(128);
 	bufgrow(ob, ib.size * 1.4f);
 
 	/* do the magic */
-    sd_markdown(ob, &ib, &_state.rndr, aliendown_md_flags);
+	sd_markdown(ob, &ib, &_state.rndr, aliendown_md_flags);
 
-    /* make a Python string */
-    py_result = Py_BuildValue("s#", ob->data, (int)ob->size);
+	/* make a Python string */
+	py_result = Py_BuildValue("s#", ob->data, (int)ob->size);
 
-    /* Cleanup */
-    bufrelease(ob);
-    return py_result;
+	/* Cleanup */
+	bufrelease(ob);
+	return py_result;
 }
 
 static PyMethodDef aliendown_methods[] = {
-    {"py_markdown", (PyCFunction) aliendown_md, METH_VARARGS | METH_KEYWORDS, aliendown_md__doc__},
-    {NULL, NULL, 0, NULL} /* Sentinel */
+	{"py_markdown", (PyCFunction) aliendown_md, METH_VARARGS | METH_KEYWORDS, aliendown_md__doc__},
+	{NULL, NULL, 0, NULL} /* Sentinel */
 };
 
 PyMODINIT_FUNC initaliendown(void)
@@ -88,7 +88,7 @@ PyMODINIT_FUNC initaliendown(void)
 	PyObject *module;
 
 	module = Py_InitModule3("aliendown", aliendown_methods, aliendown_module__doc__);
-    if (module == NULL)
+	if (module == NULL)
 		return;
 
 	sdhtml_renderer(&_state.rndr,
@@ -96,7 +96,7 @@ PyMODINIT_FUNC initaliendown(void)
 			aliendown_render_flags);
 
 	_state.options.html.link_attributes = &aliendown_link_attr;
-	
-    /* Version */
-    PyModule_AddStringConstant(module, "__version__", "0.1.0");
+
+	/* Version */
+	PyModule_AddStringConstant(module, "__version__", "0.1.0");
 }
